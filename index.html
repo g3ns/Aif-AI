@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aif v1.0 Beta - Advanced AI Assistant</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-brain"></i>
+                    <span>Aif</span>
+                    <span class="version">v1.0 β</span>
+                </div>
+                <button class="new-chat-btn" onclick="startNewChat()">
+                    <i class="fas fa-plus"></i>
+                    New Chat
+                </button>
+            </div>
+            
+            <div class="chat-history">
+                <div class="history-section">
+                    <h3>Recent Chats</h3>
+                    <div id="chat-list">
+                        <!-- Chat history will be populated here -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span>User</span>
+                </div>
+                <div class="settings-btn" onclick="toggleSettings()">
+                    <i class="fas fa-cog"></i>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Chat Area -->
+        <div class="main-content">
+            <div class="chat-header">
+                <h1>Aif - Advanced AI Assistant</h1>
+                <p>More powerful than ChatGPT and DeepSeek - with full internet access</p>
+            </div>
+            
+            <div class="chat-container">
+                <div id="chat-messages" class="chat-messages">
+                    <div class="welcome-message">
+                        <div class="ai-avatar">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="message-content">
+                            <h2>Welcome to Aif v1.0 Beta!</h2>
+                            <p>I'm your advanced AI assistant with access to the entire internet. I can:</p>
+                            <ul>
+                                <li>💬 Have natural conversations</li>
+                                <li>📁 Process and analyze uploaded files</li>
+                                <li>🌐 Access real-time information from the web</li>
+                                <li>🧠 Provide more advanced reasoning than other AI models</li>
+                                <li>🔍 Research and fact-check information</li>
+                            </ul>
+                            <p>What would you like to know or discuss today?</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="input-area">
+                <div class="file-upload-area" id="file-upload-area">
+                    <div class="uploaded-files" id="uploaded-files"></div>
+                </div>
+                
+                <div class="input-container">
+                    <button class="attach-btn" onclick="document.getElementById('file-input').click()">
+                        <i class="fas fa-paperclip"></i>
+                    </button>
+                    <input type="file" id="file-input" multiple style="display: none;" onchange="handleFileUpload(event)">
+                    
+                    <!-- Web Search Toggle -->
+                    <div class="search-toggle" id="search-toggle" onclick="toggleSearchMode()">
+                        <div class="toggle-content">
+                            <i class="fas fa-globe" id="search-icon"></i>
+                            <span id="search-text">Search the web</span>
+                            <i class="fas fa-chevron-down" id="toggle-arrow"></i>
+                        </div>
+                        <div class="toggle-dropdown" id="toggle-dropdown">
+                            <div class="toggle-option active" onclick="setSearchMode(true)">
+                                <i class="fas fa-globe"></i>
+                                <div>
+                                    <div class="option-title">Search the web</div>
+                                    <div class="option-desc">Get real-time information from the internet</div>
+                                </div>
+                            </div>
+                            <div class="toggle-option" onclick="setSearchMode(false)">
+                                <i class="fas fa-comments"></i>
+                                <div>
+                                    <div class="option-title">Chat with Aif</div>
+                                    <div class="option-desc">Have a conversation without web search</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-wrapper">
+                        <textarea 
+                            id="user-input" 
+                            placeholder="Ask Aif anything... (with full internet access)"
+                            rows="1"
+                            onkeydown="handleKeyDown(event)"
+                            oninput="adjustTextareaHeight()"
+                        ></textarea>
+                        <button class="send-btn" onclick="sendMessage()" id="send-btn">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="input-footer">
+                    <span class="status-indicator" id="status-indicator">
+                        <i class="fas fa-circle"></i> Ready - Internet access enabled
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Settings</h2>
+                <span class="close" onclick="toggleSettings()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="setting-group">
+                    <label>Response Style:</label>
+                    <select id="response-style">
+                        <option value="balanced">Balanced</option>
+                        <option value="creative">Creative</option>
+                        <option value="precise">Precise</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>Internet Access:</label>
+                    <input type="checkbox" id="internet-access" checked>
+                    <span>Enable real-time web search</span>
+                </div>
+                <div class="setting-group">
+                    <label>Theme:</label>
+                    <select id="theme">
+                        <option value="dark">Dark</option>
+                        <option value="light">Light</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
+
