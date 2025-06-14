@@ -42,7 +42,7 @@ def main():
     os.chdir(DIRECTORY)
     
     with socketserver.TCPServer(("", PORT), CustomHTTPRequestHandler) as httpd:
-        print(f"\n🤖 Starting Aif v1.0 Beta Development Server")
+        print(f"\n🤖 Starting Aif v1.2.0 Beta Development Server")
         print(f"📁 Serving directory: {DIRECTORY}")
         print(f"🌐 Server running at: http://localhost:{PORT}")
         print(f"🚀 Opening browser automatically...")

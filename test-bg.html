@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Background Upload Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0a0a0a;
+            color: white;
+            padding: 20px;
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+        
+        /* Custom background support */
+        body.custom-bg {
+            background-size: cover !important;
+            background-position: center !important;
+            background-repeat: no-repeat !important;
+            background-attachment: fixed !important;
+        }
+        
+        body.custom-bg::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: -1;
+        }
+        
+        .test-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            max-width: 600px;
+            margin: 50px auto;
+        }
+        
+        input[type="file"] {
+            margin: 20px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid #444;
+            border-radius: 5px;
+            color: white;
+        }
+        
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            background: #22c55e;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        button:hover {
+            background: #16a34a;
+        }
+        
+        .clear-btn {
+            background: #ef4444;
+        }
+        
+        .clear-btn:hover {
+            background: #dc2626;
+        }
+        
+        #status {
+            margin: 20px 0;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 5px;
+            min-height: 20px;
+        }
+        
+        #preview {
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        #preview img {
+            max-width: 300px;
+            max-height: 200px;
+            border-radius: 10px;
+            border: 2px solid #444;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🖼️ Background Upload Test</h1>
+        <p>This is a simple test page to verify background upload functionality.</p>
+        
+        <div>
+            <label for="bg-upload">Choose Background Image:</label><br>
+            <input type="file" id="bg-upload" accept="image/*">
+        </div>
+        
+        <div id="preview" style="display: none;">
+            <h3>Preview:</h3>
+            <img id="preview-img">
+        </div>
+        
+        <div>
+            <button onclick="applyBackground()">🎨 Apply Background</button>
+            <button onclick="clearBackground()" class="clear-btn">🗑️ Clear Background</button>
+        </div>
+        
+        <div id="status">Ready to test background upload...</div>
+    </div>
+    
+    <script>
+        let currentImageData = null;
+        
+        document.getElementById('bg-upload').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    currentImageData = e.target.result;
+                    
+                    // Show preview
+                    const preview = document.getElementById('preview');
+                    const previewImg = document.getElementById('preview-img');
+                    preview.style.display = 'block';
+                    previewImg.src = currentImageData;
+                    
+                    updateStatus(`📁 File loaded: ${file.name} (${formatFileSize(file.size)})`);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                updateStatus('❌ Please select a valid image file.');
+            }
+        });
+        
+        function applyBackground() {
+            if (!currentImageData) {
+                updateStatus('❌ No image selected. Please choose an image first.');
+                return;
+            }
+            
+            try {
+                // Apply background with high specificity
+                document.body.style.setProperty('background-image', `url(${currentImageData})`, 'important');
+                document.body.style.setProperty('background-size', 'cover', 'important');
+                document.body.style.setProperty('background-position', 'center', 'important');
+                document.body.style.setProperty('background-repeat', 'no-repeat', 'important');
+                document.body.style.setProperty('background-attachment', 'fixed', 'important');
+                document.body.classList.add('custom-bg');
+                
+                updateStatus('✅ Background applied successfully! You should see the image as the page background.');
+            } catch (error) {
+                updateStatus(`❌ Error applying background: ${error.message}`);
+            }
+        }
+        
+        function clearBackground() {
+            document.body.style.removeProperty('background-image');
+            document.body.style.removeProperty('background-size');
+            document.body.style.removeProperty('background-position');
+            document.body.style.removeProperty('background-repeat');
+            document.body.style.removeProperty('background-attachment');
+            document.body.classList.remove('custom-bg');
+            document.body.style.background = '#0a0a0a';
+            
+            currentImageData = null;
+            document.getElementById('preview').style.display = 'none';
+            document.getElementById('bg-upload').value = '';
+            
+            updateStatus('🗑️ Background cleared. Page reset to default.');
+        }
+        
+        function updateStatus(message) {
+            document.getElementById('status').textContent = message;
+            console.log('Status:', message);
+        }
+        
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        // Log for debugging
+        console.log('Background test page loaded successfully');
+    </script>
+</body>
+</html>
+

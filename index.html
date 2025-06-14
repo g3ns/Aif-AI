@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aif v1.0 Beta - Advanced AI Assistant</title>
+    <title>Aif v1.2.0 Beta - Advanced AI Assistant</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -16,7 +16,7 @@
                 <div class="logo">
                     <i class="fas fa-brain"></i>
                     <span>Aif</span>
-                    <span class="version">v1.0 β</span>
+                    <span class="version">v1.2.0 β</span>
                 </div>
                 <button class="new-chat-btn" onclick="startNewChat()">
                     <i class="fas fa-plus"></i>
@@ -38,8 +38,19 @@
                     <i class="fas fa-user-circle"></i>
                     <span>User</span>
                 </div>
-                <div class="settings-btn" onclick="toggleSettings()">
-                    <i class="fas fa-cog"></i>
+                <div class="controls">
+                    <div class="media-btn" onclick="toggleMediaCenter()" title="Media Center">
+                        <i class="fas fa-play-circle"></i>
+                    </div>
+                    <div class="chess-btn" onclick="toggleChessMode()" title="Chess Mode">
+                        <i class="fas fa-chess"></i>
+                    </div>
+                    <div class="theme-btn" onclick="toggleThemeSelector()" title="Themes">
+                        <i class="fas fa-palette"></i>
+                    </div>
+                    <div class="settings-btn" onclick="toggleSettings()">
+                        <i class="fas fa-cog"></i>
+                    </div>
                 </div>
             </div>
         </div>
@@ -58,7 +69,7 @@
                             <i class="fas fa-robot"></i>
                         </div>
                         <div class="message-content">
-                            <h2>Welcome to Aif v1.0 Beta!</h2>
+                <h2>Welcome to Aif v1.2.0 Beta!</h2>
                             <p>I'm your advanced AI assistant with access to the entire internet. I can:</p>
                             <ul>
                                 <li>💬 Have natural conversations</li>
@@ -66,6 +77,10 @@
                                 <li>🌐 Access real-time information from the web</li>
                                 <li>🧠 Provide more advanced reasoning than other AI models</li>
                                 <li>🔍 Research and fact-check information</li>
+                                <li>♟️ Play chess at 2000 ELO level</li>
+                                <li>🎨 Customize themes and colors</li>
+                                <li>🎵 Support media files (GIFs, MP4s, music)</li>
+                                <li>🔐 Special admin mode access</li>
                             </ul>
                             <p>What would you like to know or discuss today?</p>
                         </div>
@@ -82,32 +97,13 @@
                     <button class="attach-btn" onclick="document.getElementById('file-input').click()">
                         <i class="fas fa-paperclip"></i>
                     </button>
-                    <input type="file" id="file-input" multiple style="display: none;" onchange="handleFileUpload(event)">
+                    <input type="file" id="file-input" multiple accept="*/*,.gif,.mp4,.mp3,.wav,.ogg" style="display: none;" onchange="handleFileUpload(event)">
                     
-                    <!-- Web Search Toggle -->
-                    <div class="search-toggle" id="search-toggle" onclick="toggleSearchMode()">
-                        <div class="toggle-content">
-                            <i class="fas fa-globe" id="search-icon"></i>
-                            <span id="search-text">Search the web</span>
-                            <i class="fas fa-chevron-down" id="toggle-arrow"></i>
-                        </div>
-                        <div class="toggle-dropdown" id="toggle-dropdown">
-                            <div class="toggle-option active" onclick="setSearchMode(true)">
-                                <i class="fas fa-globe"></i>
-                                <div>
-                                    <div class="option-title">Search the web</div>
-                                    <div class="option-desc">Get real-time information from the internet</div>
-                                </div>
-                            </div>
-                            <div class="toggle-option" onclick="setSearchMode(false)">
-                                <i class="fas fa-comments"></i>
-                                <div>
-                                    <div class="option-title">Chat with Aif</div>
-                                    <div class="option-desc">Have a conversation without web search</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- Web Search Button -->
+                    <button class="web-search-btn" id="web-search-btn" onclick="performWebSearch()" title="Search the web">
+                        <i class="fas fa-globe"></i>
+                        <span>Search Web</span>
+                    </button>
                     
                     <div class="input-wrapper">
                         <textarea 
@@ -155,14 +151,41 @@
                 </div>
                 <div class="setting-group">
                     <label>Theme:</label>
-                    <select id="theme">
+                    <select id="theme" onchange="changeTheme()">
                         <option value="dark">Dark</option>
                         <option value="light">Light</option>
+                        <option value="neon">Neon</option>
+                        <option value="matrix">Matrix</option>
+                        <option value="cyberpunk">Cyberpunk</option>
+                        <option value="ocean">Ocean</option>
+                        <option value="forest">Forest</option>
                     </select>
+                </div>
+                <div class="setting-group">
+                    <label>Custom Background:</label>
+                    <input type="file" id="background-upload" accept="image/*" onchange="uploadCustomBackground(event)">
+                    <div id="background-preview" style="margin-top: 12px; display: none;">
+                        <img id="preview-image" style="width: 100%; max-height: 150px; object-fit: cover; border-radius: 8px; border: 2px solid #404040;">
+                        <div class="background-controls" style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button id="save-bg-btn" onclick="saveBackgroundToTelegram()" style="padding: 8px 16px; background: #22c55e; border: 1px solid #16a34a; border-radius: 6px; color: white; cursor: pointer; font-weight: 500;">💾 Save</button>
+                            <button onclick="clearCustomBackground()" style="padding: 8px 16px; background: #ef4444; border: 1px solid #dc2626; border-radius: 6px; color: white; cursor: pointer; font-weight: 500;">🗑️ Clear</button>
+                            <button id="revert-bg-btn" onclick="showRevertConfirmation()" style="padding: 8px 16px; background: #f59e0b; border: 1px solid #d97706; border-radius: 6px; color: white; cursor: pointer; display: none; font-weight: 500;">🔄 Revert</button>
+                        </div>
+                    </div>
+                    <div id="bg-status" style="margin-top: 8px; font-size: 12px; color: #a1a1aa;"></div>
                 </div>
             </div>
         </div>
     </div>
+    
+    <!-- Chess Board Modal (will be created dynamically) -->
+    
+    <!-- Media Center Modal (will be created dynamically) -->
+    
+    <!-- Theme Selector Modal (will be created dynamically) -->
+    
+    <!-- Hidden Audio Element for Background Music -->
+    <audio id="background-audio" loop style="display: none;"></audio>
     
     <script src="script.js"></script>
 </body>
